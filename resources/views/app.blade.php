@@ -11,12 +11,6 @@
     <div id="app">
         <router-view></router-view>
     </div>
-    <script>
-        window.userData = {!!json_encode([
-            'isLoggedIn' => Auth::check() ? true : false,
-            'user' => Auth::check() ? Auth::user() : null
-        ])!!}
-    </script>
 	<script src="{{ mix('js/app.js') }}" type="text/javascript"></script>
 </body>
 </html>

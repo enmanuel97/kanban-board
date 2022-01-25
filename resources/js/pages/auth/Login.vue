@@ -1,5 +1,38 @@
 <template>
     <div class="container h-100">
+        <div class="row justify-content-center">
+            <div class="col-md-7 col-lg-5">
+                <div class="login-wrap p-4 p-md-5">
+                    <div class="icon d-flex align-items-center justify-content-center">
+                        <span class="fa fa-user-o"></span>
+                    </div>
+                    <h3 class="text-center mb-4">Sign In</h3>
+                    <form action="#" class="login-form">
+                        <div class="form-group">
+                            <input type="text" class="form-control rounded-left" placeholder="Username" required="">
+                        </div>
+                        <div class="form-group d-flex">
+                            <input type="password" class="form-control rounded-left" placeholder="Password" required="">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Login</button>
+                        </div>
+                        <div class="form-group d-md-flex">
+                            <div class="w-50">
+                                <label class="checkbox-wrap checkbox-primary">Remember Me
+                                    <input type="checkbox" checked="">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="w-50 text-md-right">
+                                <a href="#">Forgot Password</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div class="row h-100 align-items-center">
             <div class="col-12 col-md-6 offset-md-3">
                 <div class="card shadow sm">
@@ -34,24 +67,24 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
-    name:"login",
+    name: "login",
     data(){
         return {
-            auth:{
-                email:"",
-                password:""
+            auth: {
+                email: "",
+                password: ""
             },
-            processing:false
+            processing: false
         }
     },
-    methods:{
+    methods: {
         ...mapActions({
-            signIn:'auth/login'
+            signIn: 'auth/login'
         }),
-        async login(){
+        async login() {
             this.processing = true
             await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/login',this.auth).then(({data})=>{
+            await axios.post('/api/sign-in', this.auth).then(({data}) => {
                 this.signIn()
             }).catch(({response:{data}})=>{
                 alert(data.message)

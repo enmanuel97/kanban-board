@@ -58,9 +58,9 @@ export default {
         ...mapActions({
             signIn:'auth/login'
         }),
-        async register(){
+        async register() {
             this.processing = true
-            await axios.post('/register',this.user).then(response=>{
+            await axios.post('/api/sign-up',this.user).then(response=>{
                 this.signIn()
             }).catch(({response:{data}})=>{
                 alert(data.message)
