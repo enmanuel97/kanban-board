@@ -6,10 +6,10 @@ import auth from './auth';
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    plugins:[
+    plugins: [
         createPersistedState()
     ],
-    modules:{
+    modules: {
         auth
     }
 })

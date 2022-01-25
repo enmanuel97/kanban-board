@@ -4,8 +4,8 @@ import router from '../router';
 export default {
     namespaced: true,
     state: {
-        authenticated:false,
-        user:{}
+        authenticated: false,
+        user: {}
     },
     getters: {
         authenticated(state) {
@@ -24,15 +24,10 @@ export default {
         }
     },
     actions: {
-        login({commit}) {
-            return axios.get('/api/user').then(({data}) => {
-                commit('SET_USER', data)
-                commit('SET_AUTHENTICATED', true)
-                router.push({name: 'dashboard'})
-            }).catch(({response:{data}})=>{
-                commit('SET_USER', {})
-                commit('SET_AUTHENTICATED', false)
-            })
+        login({commit}, data) {
+            commit('SET_USER', data)
+            commit('SET_AUTHENTICATED', true)
+            router.push({name: 'dashboard'})
         },
         logout({commit}) {
             commit('SET_USER', {})

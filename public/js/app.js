@@ -36438,23 +36438,16 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   actions: {
-    login: function login(_ref) {
+    login: function login(_ref, data) {
       var commit = _ref.commit;
-      return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/user').then(function (_ref2) {
-        var data = _ref2.data;
-        commit('SET_USER', data);
-        commit('SET_AUTHENTICATED', true);
-        _router__WEBPACK_IMPORTED_MODULE_1__["default"].push({
-          name: 'dashboard'
-        });
-      })["catch"](function (_ref3) {
-        var data = _ref3.response.data;
-        commit('SET_USER', {});
-        commit('SET_AUTHENTICATED', false);
+      commit('SET_USER', data);
+      commit('SET_AUTHENTICATED', true);
+      _router__WEBPACK_IMPORTED_MODULE_1__["default"].push({
+        name: 'dashboard'
       });
     },
-    logout: function logout(_ref4) {
-      var commit = _ref4.commit;
+    logout: function logout(_ref2) {
+      var commit = _ref2.commit;
       commit('SET_USER', {});
       commit('SET_AUTHENTICATED', false);
     }
@@ -36509,8 +36502,8 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Applications/XAMPP/xamppfiles/htdocs/talently-spa/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /Applications/XAMPP/xamppfiles/htdocs/talently-spa/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\talently-spa\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\talently-spa\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -1,63 +1,30 @@
 <template>
     <div class="container h-100">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center h-100 p7em">
             <div class="col-md-7 col-lg-5">
                 <div class="login-wrap p-4 p-md-5">
                     <div class="icon d-flex align-items-center justify-content-center">
-                        <span class="fa fa-user-o"></span>
+                        <span class="bi bi-person-circle"></span>
                     </div>
                     <h3 class="text-center mb-4">Sign In</h3>
-                    <form action="#" class="login-form">
+                    <form action="javascript:void(0)" class="login-form" method="post">
                         <div class="form-group">
-                            <input type="text" class="form-control rounded-left" placeholder="Username" required="">
-                        </div>
-                        <div class="form-group d-flex">
-                            <input type="password" class="form-control rounded-left" placeholder="Password" required="">
+                            <input type="text" v-model="auth.email" name="email" id="email" placeholder="Enter email" class="form-control rounded-left">
+                            <div v-if="errors != null && typeof errors['email'] != 'undefined'" style="display: block" class="invalid-feedback">{{errors['email']}}</div>
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary rounded submit px-3">Login</button>
+                            <input type="password" v-model="auth.password" name="password" id="password" placeholder="Enter password" class="form-control rounded-left">
+                            <div v-if="errors != null && typeof errors['password'] != 'undefined'" style="display: block" class="invalid-feedback">{{errors['password']}}</div>
                         </div>
-                        <div class="form-group d-md-flex">
-                            <div class="w-50">
-                                <label class="checkbox-wrap checkbox-primary">Remember Me
-                                    <input type="checkbox" checked="">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                            <div class="w-50 text-md-right">
-                                <a href="#">Forgot Password</a>
-                            </div>
+                        <div class="form-group">
+                            <button type="submit" :disabled="processing" @click="login" class="form-control btn btn-primary rounded submit px-3">
+                                {{ processing ? "Please wait" : "Login" }}
+                            </button>
+                        </div>
+                        <div class="col-12 text-center">
+                            <label>Do not have an account? <router-link :to="{name: 'register'}">Register!</router-link></label>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="row h-100 align-items-center">
-            <div class="col-12 col-md-6 offset-md-3">
-                <div class="card shadow sm">
-                    <div class="card-body">
-                        <h1 class="text-center">Login</h1>
-                        <hr/>
-                        <form action="javascript:void(0)" class="row" method="post">
-                            <div class="form-group col-12">
-                                <label for="email" class="font-weight-bold">Email</label>
-                                <input type="text" v-model="auth.email" name="email" id="email" class="form-control">
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="password" class="font-weight-bold">Password</label>
-                                <input type="password" v-model="auth.password" name="password" id="password" class="form-control">
-                            </div>
-                            <div class="col-12 mb-2">
-                                <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
-                                    {{ processing ? "Please wait" : "Login" }}
-                                </button>
-                            </div>
-                            <div class="col-12 text-center">
-                                <label>Don't have an account? <router-link :to="{name:'register'}">Register Now!</router-link></label>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -65,14 +32,16 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from 'vuex';
+import {validateFormAndGetErrors} from "../../helper";
 export default {
     name: "login",
-    data(){
+    data() {
         return {
+            errors: null,
             auth: {
-                email: "",
-                password: ""
+                email: "edelacruz9713@gmail.com",
+                password: "Jesus2313"
             },
             processing: false
         }
@@ -82,16 +51,21 @@ export default {
             signIn: 'auth/login'
         }),
         async login() {
-            this.processing = true
-            await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/api/sign-in', this.auth).then(({data}) => {
-                this.signIn()
-            }).catch(({response:{data}})=>{
-                alert(data.message)
-            }).finally(()=>{
-                this.processing = false
-            })
-        },
+            let [valid, errors] = await validateFormAndGetErrors(this.auth);
+            if(valid) {
+                this.processing = true;
+                await axios.get('/sanctum/csrf-cookie');
+                await axios.post('/api/sign-in', this.auth).then(response => {
+                    this.signIn(response.data.user_data);
+                }).catch(({response: {data}}) => {
+                    alert(data.message);
+                }).finally(() => {
+                    this.processing = false;
+                });
+            } else {
+                this.errors = errors;
+            }
+        }
     }
 }
 </script>
