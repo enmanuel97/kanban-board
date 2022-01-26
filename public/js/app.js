@@ -39526,11 +39526,11 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /* Guest Component */
 
 var Login = function Login() {
-  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Login.vue */ "./resources/js/pages/auth/Login.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Login.vue */ "./resources/js/pages/auth/Login.vue"));
 };
 
 var Register = function Register() {
-  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(8)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Register.vue */ "./resources/js/pages/auth/Register.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(8)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Register.vue */ "./resources/js/pages/auth/Register.vue"));
 };
 /* Guest Component */
 
@@ -39538,7 +39538,7 @@ var Register = function Register() {
 
 
 var DahboardLayout = function DahboardLayout() {
-  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(4)]).then(__webpack_require__.bind(null, /*! ../pages/layout/Layout.vue */ "./resources/js/pages/layout/Layout.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(4)]).then(__webpack_require__.bind(null, /*! ../pages/layout/Layout.vue */ "./resources/js/pages/layout/Layout.vue"));
 };
 /* Layouts */
 
@@ -39546,7 +39546,7 @@ var DahboardLayout = function DahboardLayout() {
 
 
 var Dashboard = function Dashboard() {
-  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(1), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ../pages/app/Dashboard.vue */ "./resources/js/pages/app/Dashboard.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(1), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ../pages/app/Dashboard.vue */ "./resources/js/pages/app/Dashboard.vue"));
 };
 /* Authenticated Component */
 

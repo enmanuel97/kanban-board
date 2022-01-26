@@ -203,10 +203,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     handleDragEvent: function handleDragEvent(type, key, value) {
-      if (this.from == '') {
-        this.from = key;
-      } else {
+      if (this.to == '') {
         this.to = key;
+      } else {
+        this.from = key;
       }
 
       console.log(type, key, value);
@@ -410,7 +410,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _this5.countEvent++;
                 event = e;
 
                 if (!(typeof event.added != 'undefined')) {
@@ -418,7 +417,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   break;
                 }
 
-                task = event.added.element; // task.status_id = this.type;
+                task = event.added.element;
+
+                if (_this5.to == 'buffer') {
+                  task.status_id = 1;
+                } else if (_this5.to == 'working') {
+                  task.status_id = 2;
+                } else if (_this5.to == 'done') {
+                  task.status_id = 3;
+                }
 
                 _context5.next = 6;
                 return axios.put('/api/tasks/' + task.id, task);
@@ -435,6 +442,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 }
 
               case 8:
+                _this5.from = '';
+                _this5.to = '';
+
+              case 10:
               case "end":
                 return _context5.stop();
             }

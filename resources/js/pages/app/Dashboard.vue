@@ -162,10 +162,10 @@ export default {
             }
         },
         handleDragEvent(type, key, value) {
-            if(this.from == '') {
-                this.from = key;
-            }  else {
+            if(this.to == '') {
                 this.to = key;
+            }  else {
+                this.from = key;
             }
             console.log(type, key, value);
             this.setTasksByType({key, value});
@@ -239,11 +239,17 @@ export default {
             }
         },
         async updateTaskStatus(e) {
-            this.countEvent++;
+
              let event = e;
              if(typeof event.added != 'undefined') {
                  let task = event.added.element;
-                 // task.status_id = this.type;
+                 if(this.to == 'buffer') {
+                     task.status_id = 1;
+                 } else if(this.to == 'working') {
+                     task.status_id = 2;
+                 } else if(this.to == 'done') {
+                     task.status_id = 3;
+                 }
                  let response = await axios.put('/api/tasks/' + task.id, task);
 
                  if (response.data.status == 200) {
@@ -254,6 +260,8 @@ export default {
                      alert('Something went wrong, please try again later.');
                  }
              }
+             this.from = '';
+             this.to = '';
         }
     },
     async mounted() {
