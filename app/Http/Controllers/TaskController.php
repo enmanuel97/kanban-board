@@ -43,7 +43,7 @@ class TaskController extends Controller
     {
         $task               = Task::find($taskId);
         $task->title        = $request->title;
-        $task->due_date     = $request->due_date;
+        $task->due_date     = date("Y-m-d H:i:s", strtotime($request->due_date));
         $task->status_id    = $request->status_id;
         $task->save();
 

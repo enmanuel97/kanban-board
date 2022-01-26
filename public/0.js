@@ -18,8 +18,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_5__);
-
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -32,6 +30,8 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -42,18 +42,6 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -157,6 +145,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      from: '',
+      to: '',
+      countEvent: 0,
+      isEditing: false,
       errors: null,
       task: {
         title: '',
@@ -171,7 +163,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.tasks.tasks.buffer;
       },
       set: function set(value) {
-        console.log(value);
+        this.handleDragEvent(1, 'buffer', value);
       }
     },
     workingTasks: {
@@ -179,7 +171,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.tasks.tasks.working;
       },
       set: function set(value) {
-        console.log(value);
+        this.handleDragEvent(2, 'working', value);
       }
     },
     doneTasks: {
@@ -187,13 +179,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return this.$store.state.tasks.tasks.done;
       },
       set: function set(value) {
-        console.log(value);
+        this.handleDragEvent(3, 'done', value);
       }
     }
   },
   methods: _objectSpread(_objectSpread({}, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])({
     setTasks: 'tasks/setTasks',
-    setTask: 'tasks/setTask'
+    setTask: 'tasks/setTask',
+    updateTaskS: 'tasks/updateTask',
+    setTasksByType: 'tasks/setTasksByType'
   })), {}, {
     formatDate: function formatDate(date) {
       return moment__WEBPACK_IMPORTED_MODULE_5___default()(date).format('DD-MM-YYYY');
@@ -201,76 +195,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     validateDate: function validateDate(date) {
       return this.formatDate(date) < this.formatDate(new Date());
     },
-    saveTask: function saveTask() {
+    handleSubmit: function handleSubmit() {
+      if (this.isEditing) {
+        this.updateTask();
+      } else {
+        this.saveTask();
+      }
+    },
+    handleDragEvent: function handleDragEvent(type, key, value) {
+      if (this.from == '') {
+        this.from = key;
+      } else {
+        this.to = key;
+      }
+
+      console.log(type, key, value);
+      this.setTasksByType({
+        key: key,
+        value: value
+      });
+    },
+    getTasks: function getTasks() {
       var _this = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
-        var _yield$validateFormAn, _yield$validateFormAn2, valid, errors, response;
-
+        var response, buffer, working, done, tasks;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return Object(_helper__WEBPACK_IMPORTED_MODULE_2__["validateFormAndGetErrors"])(_this.task);
-
-              case 2:
-                _yield$validateFormAn = _context.sent;
-                _yield$validateFormAn2 = _slicedToArray(_yield$validateFormAn, 2);
-                valid = _yield$validateFormAn2[0];
-                errors = _yield$validateFormAn2[1];
-
-                if (!valid) {
-                  _context.next = 16;
-                  break;
-                }
-
-                _this.processing = true;
-                _context.next = 10;
-                return axios.post('/api/tasks', _this.task);
-
-              case 10:
-                response = _context.sent;
-                document.querySelector('#close-modal').click();
-                _this.processing = false;
-
-                if (response.data.status == 200) {
-                  _this.setTask({
-                    key: 'buffer',
-                    value: response.data.task
-                  });
-                } else {
-                  alert('Something went wrong, please try again later.');
-                }
-
-                _context.next = 17;
-                break;
-
-              case 16:
-                _this.errors = errors;
-
-              case 17:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee);
-      }))();
-    },
-    getTasks: function getTasks() {
-      var _this2 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
-        var response, buffer, working, done, tasks;
-        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _context2.next = 2;
                 return axios.get('/api/tasks');
 
               case 2:
-                response = _context2.sent;
+                response = _context.sent;
 
                 if (response.data.status == 200) {
                   buffer = [], working = [], done = [];
@@ -289,7 +247,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     done: done
                   };
 
-                  _this2.setTasks(tasks);
+                  _this.setTasks(tasks);
+                }
+
+              case 4:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
+    editTask: function editTask(id) {
+      var _this2 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.next = 2;
+                return axios.get('/api/tasks/' + id);
+
+              case 2:
+                response = _context2.sent;
+
+                if (response.data.status == 200) {
+                  _this2.task = response.data.task;
+                  _this2.isEditing = true;
+                  document.querySelector('#add-task').click();
                 }
 
               case 4:
@@ -300,22 +287,172 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }, _callee2);
       }))();
     },
+    saveTask: function saveTask() {
+      var _this3 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+        var _yield$validateFormAn, _yield$validateFormAn2, valid, errors, response;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                _context3.next = 2;
+                return Object(_helper__WEBPACK_IMPORTED_MODULE_2__["validateFormAndGetErrors"])(_this3.task);
+
+              case 2:
+                _yield$validateFormAn = _context3.sent;
+                _yield$validateFormAn2 = _slicedToArray(_yield$validateFormAn, 2);
+                valid = _yield$validateFormAn2[0];
+                errors = _yield$validateFormAn2[1];
+
+                if (!valid) {
+                  _context3.next = 16;
+                  break;
+                }
+
+                _this3.processing = true;
+                _context3.next = 10;
+                return axios.post('/api/tasks', _this3.task);
+
+              case 10:
+                response = _context3.sent;
+                document.querySelector('#close-modal').click();
+                _this3.processing = false;
+
+                if (response.data.status == 200) {
+                  _this3.setTask({
+                    key: 'buffer',
+                    value: response.data.task
+                  });
+                } else {
+                  alert('Something went wrong, please try again later.');
+                }
+
+                _context3.next = 17;
+                break;
+
+              case 16:
+                _this3.errors = errors;
+
+              case 17:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }))();
+    },
+    updateTask: function updateTask() {
+      var _this4 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee4() {
+        var _yield$validateFormAn3, _yield$validateFormAn4, valid, errors, response, type;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.next = 2;
+                return Object(_helper__WEBPACK_IMPORTED_MODULE_2__["validateFormAndGetErrors"])(_this4.task);
+
+              case 2:
+                _yield$validateFormAn3 = _context4.sent;
+                _yield$validateFormAn4 = _slicedToArray(_yield$validateFormAn3, 2);
+                valid = _yield$validateFormAn4[0];
+                errors = _yield$validateFormAn4[1];
+
+                if (!valid) {
+                  _context4.next = 16;
+                  break;
+                }
+
+                _this4.processing = true;
+                _context4.next = 10;
+                return axios.put('/api/tasks/' + _this4.task.id, _this4.task);
+
+              case 10:
+                response = _context4.sent;
+                document.querySelector('#close-modal').click();
+                _this4.processing = false;
+
+                if (response.data.status == 200) {
+                  type = _this4.task.status_id == 1 ? 'buffer' : _this4.task.status_id == 2 ? 'working' : 'done';
+
+                  _this4.updateTaskS({
+                    key: type,
+                    value: response.data.task
+                  });
+                } else {
+                  alert('Something went wrong, please try again later.');
+                }
+
+                _context4.next = 17;
+                break;
+
+              case 16:
+                _this4.errors = errors;
+
+              case 17:
+              case "end":
+                return _context4.stop();
+            }
+          }
+        }, _callee4);
+      }))();
+    },
     updateTaskStatus: function updateTaskStatus(e) {
-      var task = e;
-      console.log(task); // task.status_id = e.to.index + 1;
-      // this.setTask(e.to.index + 1, task);
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee5() {
+        var event, task, response;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _this5.countEvent++;
+                event = e;
+
+                if (!(typeof event.added != 'undefined')) {
+                  _context5.next = 8;
+                  break;
+                }
+
+                task = event.added.element; // task.status_id = this.type;
+
+                _context5.next = 6;
+                return axios.put('/api/tasks/' + task.id, task);
+
+              case 6:
+                response = _context5.sent;
+
+                if (response.data.status == 200) {
+                  if (task.status_id === 3) {
+                    alert('Felicitaciones por lograrlo!');
+                  }
+                } else {
+                  alert('Something went wrong, please try again later.');
+                }
+
+              case 8:
+              case "end":
+                return _context5.stop();
+            }
+          }
+        }, _callee5);
+      }))();
     }
   }),
   mounted: function mounted() {
-    var _this3 = this;
+    var _this6 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3() {
+    return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
       var me;
-      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
         while (1) {
-          switch (_context3.prev = _context3.next) {
+          switch (_context6.prev = _context6.next) {
             case 0:
-              me = _this3;
+              me = _this6;
               document.querySelector("#task-modal").addEventListener('hidden.bs.modal', function (event) {
                 me.errors = null;
                 me.task = {
@@ -323,15 +460,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   due_date: new Date()
                 };
               });
-              _context3.next = 4;
-              return _this3.getTasks();
+              _context6.next = 4;
+              return _this6.getTasks();
 
             case 4:
             case "end":
-              return _context3.stop();
+              return _context6.stop();
           }
         }
-      }, _callee3);
+      }, _callee6);
     }))();
   }
 });
@@ -658,71 +795,73 @@ var render = function () {
   return _c("div", { staticClass: "container py-5" }, [
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-12 col-lg-4" }, [
-        _c("div", { staticClass: "card mb-3 card-element" }, [
-          _c("div", { staticClass: "card-header bg-light" }, [
-            _c("h3", { staticClass: "card-title h5 mb-1" }, [
-              _vm._v(
-                "\n                        Buffer\n                        "
-              ),
-              _c(
-                "span",
-                { staticClass: "badge bg-primary text-white float-end" },
-                [_vm._v(_vm._s(_vm.bufferTasks.length))]
-              ),
-            ]),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "div",
-              { attrs: { id: "buffer" } },
-              [
+        _c(
+          "div",
+          { staticClass: "card mb-3 card-element" },
+          [
+            _c("div", { staticClass: "card-header bg-light" }, [
+              _c("h3", { staticClass: "card-title h5 mb-1" }, [
+                _vm._v(
+                  "\n                        Buffer\n                        "
+                ),
                 _c(
-                  "draggable",
+                  "span",
+                  { staticClass: "badge bg-primary text-white float-end" },
+                  [_vm._v(_vm._s(_vm.bufferTasks.length))]
+                ),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c(
+              "draggable",
+              {
+                staticClass: "card-body",
+                attrs: { id: "buffer", group: "task" },
+                on: { change: _vm.updateTaskStatus },
+                model: {
+                  value: _vm.bufferTasks,
+                  callback: function ($$v) {
+                    _vm.bufferTasks = $$v
+                  },
+                  expression: "bufferTasks",
+                },
+              },
+              _vm._l(_vm.bufferTasks, function (task) {
+                return _c(
+                  "div",
                   {
-                    attrs: { group: "task" },
-                    on: { end: _vm.updateTaskStatus },
-                    model: {
-                      value: _vm.bufferTasks,
-                      callback: function ($$v) {
-                        _vm.bufferTasks = $$v
+                    key: task.id,
+                    staticClass: "card mb-3 cursor-grab",
+                    on: {
+                      click: function ($event) {
+                        return _vm.editTask(task.id)
                       },
-                      expression: "bufferTasks",
                     },
                   },
-                  _vm._l(_vm.bufferTasks, function (task) {
-                    return _c(
+                  [
+                    _c(
                       "div",
-                      { key: task.id, staticClass: "card mb-3 cursor-grab" },
+                      {
+                        staticClass: "card-body",
+                        class: { "color-red": _vm.validateDate(task.due_date) },
+                      },
                       [
-                        _c(
-                          "div",
-                          {
-                            staticClass: "card-body",
-                            class: {
-                              "color-red": _vm.validateDate(task.due_date),
-                            },
-                          },
-                          [
-                            _c("h5", { staticClass: "mb-0" }, [
-                              _vm._v(_vm._s(task.title)),
-                            ]),
-                            _vm._v(" "),
-                            _c("p", { staticClass: "mb-0" }, [
-                              _vm._v(
-                                "Fecha de entrega: " +
-                                  _vm._s(_vm.formatDate(task.due_date))
-                              ),
-                            ]),
-                          ]
-                        ),
+                        _c("h5", { staticClass: "mb-0" }, [
+                          _vm._v(_vm._s(task.title)),
+                        ]),
+                        _vm._v(" "),
+                        _c("p", { staticClass: "mb-0" }, [
+                          _vm._v(
+                            "Fecha de entrega: " +
+                              _vm._s(_vm.formatDate(task.due_date))
+                          ),
+                        ]),
                       ]
-                    )
-                  }),
-                  0
-                ),
-              ],
-              1
+                    ),
+                  ]
+                )
+              }),
+              0
             ),
             _vm._v(" "),
             _c(
@@ -733,145 +872,144 @@ var render = function () {
                   href: "javascript:void(0)",
                   "data-bs-toggle": "modal",
                   "data-bs-target": "#task-modal",
+                  id: "add-task",
                 },
               },
               [_vm._v("Add")]
             ),
-          ]),
-        ]),
+          ],
+          1
+        ),
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "col-12 col-lg-4" }, [
-        _c("div", { staticClass: "card mb-3 card-element" }, [
-          _c("div", { staticClass: "card-header bg-light" }, [
-            _c("h3", { staticClass: "card-title h5 mb-1" }, [
-              _vm._v(
-                "\n                        Working\n                        "
-              ),
-              _c(
-                "span",
-                { staticClass: "badge bg-primary text-white float-end" },
-                [_vm._v(_vm._s(_vm.workingTasks.length))]
-              ),
-            ]),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "div",
-              { attrs: { id: "working" } },
-              [
-                _c(
-                  "draggable",
-                  {
-                    attrs: { group: "task" },
-                    on: { end: _vm.updateTaskStatus },
-                    model: {
-                      value: _vm.workingTasks,
-                      callback: function ($$v) {
-                        _vm.workingTasks = $$v
-                      },
-                      expression: "workingTasks",
-                    },
-                  },
-                  _vm._l(_vm.workingTasks, function (task) {
-                    return _c(
-                      "div",
-                      { key: task.id, staticClass: "card mb-3 cursor-grab" },
-                      [
-                        _c(
-                          "div",
-                          {
-                            staticClass: "card-body",
-                            class: {
-                              "color-red": _vm.validateDate(task.due_date),
-                            },
-                          },
-                          [
-                            _c("h5", { staticClass: "mb-0" }, [
-                              _vm._v(_vm._s(task.title)),
-                            ]),
-                            _vm._v(" "),
-                            _c("p", { staticClass: "mb-0" }, [
-                              _vm._v(
-                                "Fecha de entrega: " +
-                                  _vm._s(_vm.formatDate(task.due_date))
-                              ),
-                            ]),
-                          ]
-                        ),
-                      ]
-                    )
-                  }),
-                  0
+        _c(
+          "div",
+          { staticClass: "card mb-3 card-element" },
+          [
+            _c("div", { staticClass: "card-header bg-light" }, [
+              _c("h3", { staticClass: "card-title h5 mb-1" }, [
+                _vm._v(
+                  "\n                        Working\n                        "
                 ),
-              ],
-              1
-            ),
-          ]),
-        ]),
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-12 col-lg-4" }, [
-        _c("div", { staticClass: "card mb-3 card-element" }, [
-          _c("div", { staticClass: "card-header bg-light" }, [
-            _c("h3", { staticClass: "card-title h5 mb-1" }, [
-              _vm._v(
-                "\n                        Done\n                        "
-              ),
-              _c(
-                "span",
-                { staticClass: "badge bg-primary text-white float-end" },
-                [_vm._v(_vm._s(_vm.doneTasks.length))]
-              ),
-            ]),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c(
-              "div",
-              { attrs: { id: "done" } },
-              [
                 _c(
-                  "draggable",
-                  {
-                    attrs: { group: "task" },
-                    on: { end: _vm.updateTaskStatus },
-                    model: {
-                      value: _vm.doneTasks,
-                      callback: function ($$v) {
-                        _vm.doneTasks = $$v
-                      },
-                      expression: "doneTasks",
-                    },
+                  "span",
+                  { staticClass: "badge bg-primary text-white float-end" },
+                  [_vm._v(_vm._s(_vm.workingTasks.length))]
+                ),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c(
+              "draggable",
+              {
+                staticClass: "card-body",
+                attrs: { id: "working", group: "task" },
+                on: { change: _vm.updateTaskStatus },
+                model: {
+                  value: _vm.workingTasks,
+                  callback: function ($$v) {
+                    _vm.workingTasks = $$v
                   },
-                  _vm._l(_vm.doneTasks, function (task) {
-                    return _c(
+                  expression: "workingTasks",
+                },
+              },
+              _vm._l(_vm.workingTasks, function (task) {
+                return _c(
+                  "div",
+                  { key: task.id, staticClass: "card mb-3 cursor-grab" },
+                  [
+                    _c(
                       "div",
-                      { key: task.id, staticClass: "card mb-3 cursor-grab" },
+                      {
+                        staticClass: "card-body",
+                        class: { "color-red": _vm.validateDate(task.due_date) },
+                      },
                       [
-                        _c("div", { staticClass: "card-body" }, [
-                          _c("h5", { staticClass: "mb-0" }, [
-                            _vm._v(_vm._s(task.title)),
-                          ]),
-                          _vm._v(" "),
-                          _c("p", { staticClass: "mb-0" }, [
-                            _vm._v(
-                              "Fecha de entrega: " +
-                                _vm._s(_vm.formatDate(task.due_date))
-                            ),
-                          ]),
+                        _c("h5", { staticClass: "mb-0" }, [
+                          _vm._v(_vm._s(task.title)),
+                        ]),
+                        _vm._v(" "),
+                        _c("p", { staticClass: "mb-0" }, [
+                          _vm._v(
+                            "Fecha de entrega: " +
+                              _vm._s(_vm.formatDate(task.due_date))
+                          ),
                         ]),
                       ]
-                    )
-                  }),
-                  0
-                ),
-              ],
-              1
+                    ),
+                  ]
+                )
+              }),
+              0
             ),
-          ]),
-        ]),
+          ],
+          1
+        ),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 col-lg-4" }, [
+        _c(
+          "div",
+          { staticClass: "card mb-3 card-element" },
+          [
+            _c("div", { staticClass: "card-header bg-light" }, [
+              _c("h3", { staticClass: "card-title h5 mb-1" }, [
+                _vm._v(
+                  "\n                        Done\n                        "
+                ),
+                _c(
+                  "span",
+                  { staticClass: "badge bg-primary text-white float-end" },
+                  [_vm._v(_vm._s(_vm.doneTasks.length))]
+                ),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c(
+              "draggable",
+              {
+                staticClass: "card-body",
+                attrs: { id: "done", group: "task" },
+                on: {
+                  dragenter: function ($event) {
+                    _vm.countEvent = 0
+                  },
+                  change: _vm.updateTaskStatus,
+                },
+                model: {
+                  value: _vm.doneTasks,
+                  callback: function ($$v) {
+                    _vm.doneTasks = $$v
+                  },
+                  expression: "doneTasks",
+                },
+              },
+              _vm._l(_vm.doneTasks, function (task) {
+                return _c(
+                  "div",
+                  { key: task.id, staticClass: "card mb-3 cursor-grab" },
+                  [
+                    _c("div", { staticClass: "card-body" }, [
+                      _c("h5", { staticClass: "mb-0" }, [
+                        _vm._v(_vm._s(task.title)),
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "mb-0" }, [
+                        _vm._v(
+                          "Fecha de entrega: " +
+                            _vm._s(_vm.formatDate(task.due_date))
+                        ),
+                      ]),
+                    ]),
+                  ]
+                )
+              }),
+              0
+            ),
+          ],
+          1
+        ),
       ]),
     ]),
     _vm._v(" "),
@@ -889,7 +1027,25 @@ var render = function () {
       [
         _c("div", { staticClass: "modal-dialog" }, [
           _c("div", { staticClass: "modal-content" }, [
-            _vm._m(0),
+            _c("div", { staticClass: "modal-header" }, [
+              _c(
+                "h5",
+                {
+                  staticClass: "modal-title",
+                  attrs: { id: "task-modal-label" },
+                },
+                [_vm._v(_vm._s(_vm.isEditing ? "Edit Task" : "Create Task"))]
+              ),
+              _vm._v(" "),
+              _c("button", {
+                staticClass: "btn-close",
+                attrs: {
+                  type: "button",
+                  "data-bs-dismiss": "modal",
+                  "aria-label": "Close",
+                },
+              }),
+            ]),
             _vm._v(" "),
             _c("div", { staticClass: "modal-body" }, [
               _c("form", [
@@ -977,7 +1133,7 @@ var render = function () {
                 {
                   staticClass: "btn btn-primary",
                   attrs: { type: "button" },
-                  on: { click: _vm.saveTask },
+                  on: { click: _vm.handleSubmit },
                 },
                 [_vm._v("Save")]
               ),
@@ -988,29 +1144,7 @@ var render = function () {
     ),
   ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c(
-        "h5",
-        { staticClass: "modal-title", attrs: { id: "task-modal-label" } },
-        [_vm._v("Create Task")]
-      ),
-      _vm._v(" "),
-      _c("button", {
-        staticClass: "btn-close",
-        attrs: {
-          type: "button",
-          "data-bs-dismiss": "modal",
-          "aria-label": "Close",
-        },
-      }),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

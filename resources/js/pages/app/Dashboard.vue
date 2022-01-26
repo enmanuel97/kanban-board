@@ -9,19 +9,15 @@
                             <span class="badge bg-primary text-white float-end">{{bufferTasks.length}}</span>
                         </h3>
                     </div>
-                    <div class="card-body">
-                        <div id="buffer">
-                            <draggable v-model="bufferTasks" group="task" @end="updateTaskStatus">
-                                <div class="card mb-3 cursor-grab" v-for="task in bufferTasks" :key="task.id">
-                                    <div class="card-body" v-bind:class="{'color-red': validateDate(task.due_date)}">
-                                        <h5 class="mb-0">{{task.title}}</h5>
-                                        <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
-                                    </div>
-                                </div>
-                            </draggable>
+                    <draggable class="card-body" id="buffer" v-model="bufferTasks" group="task" @change="updateTaskStatus">
+                        <div class="card mb-3 cursor-grab" @click="editTask(task.id)" v-for="task in bufferTasks" :key="task.id">
+                            <div class="card-body" v-bind:class="{'color-red': validateDate(task.due_date)}">
+                                <h5 class="mb-0">{{task.title}}</h5>
+                                <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
+                            </div>
                         </div>
-                        <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#task-modal" class="btn btn-primary w-100">Add</a>
-                    </div>
+                    </draggable>
+                    <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#task-modal" id="add-task" class="btn btn-primary w-100">Add</a>
                 </div>
             </div>
             <div class="col-12 col-lg-4">
@@ -32,18 +28,14 @@
                             <span class="badge bg-primary text-white float-end">{{workingTasks.length}}</span>
                         </h3>
                     </div>
-                    <div class="card-body">
-                        <div id="working">
-                            <draggable v-model="workingTasks" group="task" @end="updateTaskStatus">
-                                <div class="card mb-3 cursor-grab" v-for="task in workingTasks" :key="task.id">
-                                    <div class="card-body" v-bind:class="{'color-red': validateDate(task.due_date)}">
-                                        <h5 class="mb-0">{{task.title}}</h5>
-                                        <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
-                                    </div>
-                                </div>
-                            </draggable>
+                    <draggable class="card-body" id="working" v-model="workingTasks" group="task" @change="updateTaskStatus">
+                        <div class="card mb-3 cursor-grab" v-for="task in workingTasks" :key="task.id">
+                            <div class="card-body" v-bind:class="{'color-red': validateDate(task.due_date)}">
+                                <h5 class="mb-0">{{task.title}}</h5>
+                                <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
+                            </div>
                         </div>
-                    </div>
+                    </draggable>
                 </div>
             </div>
 
@@ -55,18 +47,14 @@
                             <span class="badge bg-primary text-white float-end">{{ doneTasks.length }}</span>
                         </h3>
                     </div>
-                    <div class="card-body">
-                        <div id="done">
-                            <draggable v-model="doneTasks" group="task" @end="updateTaskStatus">
-                                <div class="card mb-3 cursor-grab" v-for="task in doneTasks" :key="task.id">
-                                    <div class="card-body">
-                                        <h5 class="mb-0">{{task.title}}</h5>
-                                        <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
-                                    </div>
-                                </div>
-                            </draggable>
+                    <draggable class="card-body" id="done" v-model="doneTasks" group="task" @dragenter="countEvent=0" @change="updateTaskStatus">
+                        <div class="card mb-3 cursor-grab" v-for="task in doneTasks" :key="task.id">
+                            <div class="card-body">
+                                <h5 class="mb-0">{{task.title}}</h5>
+                                <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
+                            </div>
                         </div>
-                    </div>
+                    </draggable>
                 </div>
             </div>
         </div>
@@ -74,7 +62,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="task-modal-label">Create Task</h5>
+                        <h5 class="modal-title" id="task-modal-label">{{isEditing ? 'Edit Task' : 'Create Task'}}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -92,7 +80,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="close-modal" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="saveTask">Save</button>
+                        <button type="button" class="btn btn-primary" @click="handleSubmit">Save</button>
                     </div>
                 </div>
             </div>
@@ -115,6 +103,10 @@ export default {
     },
     data() {
         return {
+            from: '',
+            to: '',
+            countEvent: 0,
+            isEditing: false,
             errors: null,
             task: {
                 title: '',
@@ -129,7 +121,7 @@ export default {
                 return this.$store.state.tasks.tasks.buffer;
             },
             set(value) {
-                console.log(value)
+                this.handleDragEvent(1, 'buffer', value);
             }
         },
         workingTasks: {
@@ -137,7 +129,7 @@ export default {
                 return this.$store.state.tasks.tasks.working;
             },
             set(value) {
-                console.log(value)
+                this.handleDragEvent(2, 'working', value);
             }
         },
         doneTasks: {
@@ -145,7 +137,7 @@ export default {
                 return this.$store.state.tasks.tasks.done;
             },
             set(value) {
-                console.log(value)
+                this.handleDragEvent(3, 'done', value);
             }
         },
     },
@@ -153,6 +145,8 @@ export default {
         ...mapActions({
             setTasks: 'tasks/setTasks',
             setTask: 'tasks/setTask',
+            updateTaskS: 'tasks/updateTask',
+            setTasksByType: 'tasks/setTasksByType',
         }),
         formatDate(date) {
             return moment(date).format('DD-MM-YYYY');
@@ -160,23 +154,21 @@ export default {
         validateDate(date) {
             return this.formatDate(date) < this.formatDate(new Date());
         },
-        async saveTask() {
-            let [valid, errors] = await validateFormAndGetErrors(this.task);
-            if(valid) {
-                this.processing = true;
-                let response = await axios.post('/api/tasks', this.task);
-
-                document.querySelector('#close-modal').click();
-                this.processing = false;
-
-                if(response.data.status == 200) {
-                    this.setTask({key: 'buffer', value: response.data.task});
-                } else {
-                    alert('Something went wrong, please try again later.');
-                }
+        handleSubmit() {
+            if (this.isEditing) {
+                this.updateTask();
             } else {
-                this.errors = errors;
+                this.saveTask();
             }
+        },
+        handleDragEvent(type, key, value) {
+            if(this.from == '') {
+                this.from = key;
+            }  else {
+                this.to = key;
+            }
+            console.log(type, key, value);
+            this.setTasksByType({key, value});
         },
         async getTasks() {
             let response = await axios.get('/api/tasks');
@@ -201,11 +193,67 @@ export default {
                 this.setTasks(tasks);
             }
         },
-        updateTaskStatus(e) {
-            let task = e;
-            console.log(task);
-            // task.status_id = e.to.index + 1;
-            // this.setTask(e.to.index + 1, task);
+        async editTask(id) {
+            let response = await axios.get('/api/tasks/' + id);
+            if(response.data.status == 200) {
+                this.task = response.data.task;
+                this.isEditing = true;
+                document.querySelector('#add-task').click();
+            }
+        },
+        async saveTask() {
+            let [valid, errors] = await validateFormAndGetErrors(this.task);
+            if(valid) {
+                this.processing = true;
+                let response = await axios.post('/api/tasks', this.task);
+
+                document.querySelector('#close-modal').click();
+                this.processing = false;
+
+                if(response.data.status == 200) {
+                    this.setTask({key: 'buffer', value: response.data.task});
+                } else {
+                    alert('Something went wrong, please try again later.');
+                }
+            } else {
+                this.errors = errors;
+            }
+        },
+        async updateTask() {
+            let [valid, errors] = await validateFormAndGetErrors(this.task);
+            if(valid) {
+                this.processing = true;
+                let response = await axios.put('/api/tasks/' + this.task.id, this.task);
+
+                document.querySelector('#close-modal').click();
+                this.processing = false;
+
+                if(response.data.status == 200) {
+                    let type = this.task.status_id == 1 ? 'buffer' : this.task.status_id == 2 ? 'working' : 'done';
+                    this.updateTaskS({key: type, value: response.data.task});
+                } else {
+                    alert('Something went wrong, please try again later.');
+                }
+            } else {
+                this.errors = errors;
+            }
+        },
+        async updateTaskStatus(e) {
+            this.countEvent++;
+             let event = e;
+             if(typeof event.added != 'undefined') {
+                 let task = event.added.element;
+                 // task.status_id = this.type;
+                 let response = await axios.put('/api/tasks/' + task.id, task);
+
+                 if (response.data.status == 200) {
+                     if (task.status_id === 3) {
+                         alert('Felicitaciones por lograrlo!');
+                     }
+                 } else {
+                     alert('Something went wrong, please try again later.');
+                 }
+             }
         }
     },
     async mounted() {

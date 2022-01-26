@@ -39526,11 +39526,11 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
 /* Guest Component */
 
 var Login = function Login() {
-  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Login.vue */ "./resources/js/pages/auth/Login.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Login.vue */ "./resources/js/pages/auth/Login.vue"));
 };
 
 var Register = function Register() {
-  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(8)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Register.vue */ "./resources/js/pages/auth/Register.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(8)]).then(__webpack_require__.bind(null, /*! ../pages/auth/Register.vue */ "./resources/js/pages/auth/Register.vue"));
 };
 /* Guest Component */
 
@@ -39538,7 +39538,7 @@ var Register = function Register() {
 
 
 var DahboardLayout = function DahboardLayout() {
-  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(4)]).then(__webpack_require__.bind(null, /*! ../pages/layout/Layout.vue */ "./resources/js/pages/layout/Layout.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(4)]).then(__webpack_require__.bind(null, /*! ../pages/layout/Layout.vue */ "./resources/js/pages/layout/Layout.vue"));
 };
 /* Layouts */
 
@@ -39546,7 +39546,7 @@ var DahboardLayout = function DahboardLayout() {
 
 
 var Dashboard = function Dashboard() {
-  return Promise.all(/*! import() */[__webpack_require__.e(3), __webpack_require__.e(2), __webpack_require__.e(1), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ../pages/app/Dashboard.vue */ "./resources/js/pages/app/Dashboard.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(5), __webpack_require__.e(2), __webpack_require__.e(1), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ../pages/app/Dashboard.vue */ "./resources/js/pages/app/Dashboard.vue"));
 };
 /* Authenticated Component */
 
@@ -39716,22 +39716,53 @@ __webpack_require__.r(__webpack_exports__);
     SET_TASKS: function SET_TASKS(state, value) {
       state.tasks = value;
     },
-    SET_TASK: function SET_TASK(state, _ref) {
+    SET_TASKS_BY_TYPE: function SET_TASKS_BY_TYPE(state, _ref) {
       var key = _ref.key,
           value = _ref.value;
+      state.tasks[key] = value;
+    },
+    SET_TASK: function SET_TASK(state, _ref2) {
+      var key = _ref2.key,
+          value = _ref2.value;
       state.tasks[key].push(value);
+    },
+    UPDATE_TASK: function UPDATE_TASK(state, _ref3) {
+      var key = _ref3.key,
+          value = _ref3.value;
+      var task = state.tasks[key].filter(function (task) {
+        return task.id === value.id;
+      })[0];
+      Object.assign(task, value);
     }
   },
   actions: {
-    setTasks: function setTasks(_ref2, value) {
-      var commit = _ref2.commit;
+    setTasks: function setTasks(_ref4, value) {
+      var commit = _ref4.commit;
       commit('SET_TASKS', value);
     },
-    setTask: function setTask(_ref3, _ref4) {
-      var commit = _ref3.commit;
-      var key = _ref4.key,
-          value = _ref4.value;
+    setTasksByType: function setTasksByType(_ref5, _ref6) {
+      var commit = _ref5.commit;
+      var key = _ref6.key,
+          value = _ref6.value;
+      commit('SET_TASKS_BY_TYPE', {
+        key: key,
+        value: value
+      });
+    },
+    setTask: function setTask(_ref7, _ref8) {
+      var commit = _ref7.commit;
+      var key = _ref8.key,
+          value = _ref8.value;
       commit('SET_TASK', {
+        key: key,
+        value: value
+      });
+    },
+    updateTask: function updateTask(_ref9, _ref10) {
+      var commit = _ref9.commit;
+      var key = _ref10.key,
+          value = _ref10.value;
+      commit('UPDATE_TASK', {
         key: key,
         value: value
       });
