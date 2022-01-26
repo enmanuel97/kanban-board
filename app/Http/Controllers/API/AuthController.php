@@ -17,9 +17,9 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            $user = new User();
-            $user->name = $request->name;
-            $user->email = $request->email;
+            $user           = new User();
+            $user->name     = $request->name;
+            $user->email    = $request->email;
             $user->password = Hash::make($request->password);
             $user->save();
 
@@ -69,17 +69,5 @@ class AuthController extends Controller
                 "message" => "Unauthorized"
             ]);
         }
-    }
-
-    /**
-     * Logout
-     */
-    public function logout()
-    {
-        request()->user()->currentAccessToken()->delete();
-        return response()->json([
-            "status_code" => 200,
-            "message" => "Logout",
-        ]);
     }
 }

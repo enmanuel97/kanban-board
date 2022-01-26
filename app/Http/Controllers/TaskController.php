@@ -7,79 +7,49 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function getAll(Request $request)
     {
-        //
+        $tasks = Task::where('user_id', $request->user()->id)->get();
+        return response()->json([
+            "status"    => 200,
+            "tasks"     => $tasks
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function get($taskId)
     {
-        //
+        return response()->json([
+            "status"    => 200,
+            "task"      => Task::find($taskId)
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $task               = new Task();
+        $task->title        = $request->title;
+        $task->due_date     = date("Y-m-d H:i:s", strtotime($request->due_date));
+        $task->status_id    = 1;
+        $task->user_id      = $request->user()->id;
+        $task->save();
+
+        return response()->json([
+            "status"   => 200,
+            "task"          => $task
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Task $task)
+    public function update(Request $request, $taskId)
     {
-        //
-    }
+        $task               = Task::find($taskId);
+        $task->title        = $request->title;
+        $task->due_date     = $request->due_date;
+        $task->status_id    = $request->status_id;
+        $task->save();
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Task $task)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Task $task)
-    {
-        //
+        return response()->json([
+            "status"   => 200,
+            "task"          => $task
+        ]);
     }
 }

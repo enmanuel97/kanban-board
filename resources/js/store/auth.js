@@ -7,14 +7,6 @@ export default {
         authenticated: false,
         user: {}
     },
-    getters: {
-        authenticated(state) {
-            return state.authenticated
-        },
-        user(state) {
-            return state.user
-        }
-    },
     mutations: {
         SET_AUTHENTICATED (state, value) {
             state.authenticated = value

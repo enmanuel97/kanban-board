@@ -41,7 +41,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import {validateFormAndGetErrors} from "../../helper";
+import { validateFormAndGetErrors } from "../../helper";
 export default {
     name: 'register',
     data() {

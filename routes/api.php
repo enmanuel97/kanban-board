@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Http\Request;
 
 /*
@@ -20,8 +21,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('sign-in', [AuthController::class, 'login']);
 Route::post('sign-up', [AuthController::class, 'register']);
-Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::group(['prefix' => 'tasks', 'middleware' => ['auth:sanctum']], function () {
-
+    Route::get('/', [TaskController::class, 'getAll']);
+    Route::get('/{id}', [TaskController::class, 'get']);
+    Route::post('/', [TaskController::class, 'store']);
+    Route::put('/{id}', [TaskController::class, 'update']);
 });
