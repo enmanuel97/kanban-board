@@ -29,7 +29,7 @@
                         </h3>
                     </div>
                     <draggable class="card-body" id="working" v-model="workingTasks" group="task" @change="updateTaskStatus">
-                        <div class="card mb-3 cursor-grab" v-for="task in workingTasks" :key="task.id">
+                        <div class="card mb-3 cursor-grab" @click="editTask(task.id)" v-for="task in workingTasks" :key="task.id">
                             <div class="card-body" v-bind:class="{'color-red': validateDate(task.due_date)}">
                                 <h5 class="mb-0">{{task.title}}</h5>
                                 <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
@@ -48,7 +48,7 @@
                         </h3>
                     </div>
                     <draggable class="card-body" id="done" v-model="doneTasks" group="task" @dragenter="countEvent=0" @change="updateTaskStatus">
-                        <div class="card mb-3 cursor-grab" v-for="task in doneTasks" :key="task.id">
+                        <div class="card mb-3 cursor-grab" @click="editTask(task.id)" v-for="task in doneTasks" :key="task.id">
                             <div class="card-body">
                                 <h5 class="mb-0">{{task.title}}</h5>
                                 <p class="mb-0">Fecha de entrega: {{formatDate(task.due_date)}}</p>
